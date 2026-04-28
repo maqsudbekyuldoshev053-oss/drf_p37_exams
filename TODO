@@ -49,30 +49,129 @@ DELETE  	/comments/1
 
 
 
-""""
 
-    def get_queryset(self):
-        qs = super().get_queryset()
 
-        name = self.request.query_params.get('name')
-        if name:
-            qs = qs.filter(name__icontains=name)
+ISHGA
+🚀 Advanced Topshiriq: Multi-User Blog + Interaction API
+🎯 Maqsad:
 
-        grade = self.request.query_params.get('grade')
-        if grade:
-            qs = qs.filter(grade=grade)
+Quyidagi barcha tushunchalarni real loyihadagidek ishlatish:
 
-        min_age = self.request.query_params.get('min_age')
-        if min_age:
-            qs = qs.filter(age__gte=min_age)
+Murakkab model relationlar
+Custom serializer logic
+Advanced filter/search
+JWT + role based permission
+Admin customization
+🧩 1. Model struktura (murakkabroq)
 
-        active = self.request.query_params.get('active')
-        if active is not None:
-            if active.lower() == 'true':
-                qs = qs.filter(active=True)
-            elif active.lower() == 'false':
-                qs = qs.filter(active=False)
+Quyidagi modellerni yarat:
 
-        return qs
+👤 User (custom user bo‘lsa yaxshi)
+username
+email
+role (ADMIN, AUTHOR, READER)
+📝 Post
+title
+content
+author (FK → User)
+category (FK → Category)
+tags (ManyToMany → Tag)
+is_published
+views_count
+created_at
+🗂 Category
+name
+🏷 Tag
+name
+❤️ Like
+user
+post
 
-""""
+👉 Constraint qo‘shing:
+
+1 user 1 postga faqat 1 marta like bosishi mumkin
+🔄 2. Serializer (advanced logic)
+PostSerializer:
+author read-only
+likes_count (annotate yoki method field)
+is_liked (request.user ga qarab)
+tags nested yoki slug orqali
+
+👉 Bonus:
+
+create/update da taglarni avtomatik create qilsin
+🔐 3. JWT Auth
+
+djangorestframework-simplejwt
+
+Qo‘shimcha:
+
+Custom token ichiga role qo‘shing
+🔑 4. Permission (murakkab)
+
+Custom permission yoz:
+
+Rules:
+ADMIN → hamma narsani qila oladi
+AUTHOR → faqat o‘z postini edit/delete
+READER → faqat o‘qiydi
+
+👉 Custom class yoz (IsAuthorOrAdmin kabi)
+
+🔎 5. Advanced Filter/Search
+
+django-filter
+
+Filter:
+category
+tags (multi filter)
+created_at range
+views_count > X
+Search:
+title
+content
+Ordering:
+created_at
+views_count
+likes_count
+⚡ 6. ViewSet (pro level)
+PostViewSet:
+CRUD
+/like/ custom action
+/unlike/ custom action
+/popular/ → eng ko‘p ko‘rilgan postlar
+/my-posts/ → user postlari
+
+👉 views_count:
+
+retrieve qilinganda +1 bo‘lsin
+🛠 7. Admin panel (pro customization)
+
+Admin’da:
+
+Inline Like ko‘rsatish
+list_display:
+title, author, views_count, is_published
+filter:
+category, is_published
+search:
+title, content
+
+👉 Bonus:
+
+views_count ni readonly qiling
+🧠 8. Performance (important)
+select_related
+prefetch_related
+annotate bilan likes_count
+📄 9. Default Settings
+DEFAULT_PERMISSION → IsAuthenticated
+Pagination (limit/offset)
+Throttling qo‘shish (optional)
+
+
+
+
+27
+30
+34
