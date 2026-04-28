@@ -1,39 +1,15 @@
-from django.db.models.aggregates import Count
-from django_filters import FilterSet, NumberFilter
+from django_filters import NumberFilter, DateTimeFilter
+from django_filters.rest_framework import FilterSet
 
-from apps.models import Post, Album, Photo, User, Comments
+from apps.models import Post
 
 
 class PostFilter(FilterSet):
+    from_time = DateTimeFilter(field_name='created_at', lookup_expr='gte')
+    to_time = DateTimeFilter(field_name='created_at', lookup_expr='lte')
+    view_count = NumberFilter(field_name='views_count', lookup_expr='gt')
+
 
     class Meta:
         model = Post
-        fields = ('userId',)
-
-
-
-class AlbumFilter(FilterSet):
-
-    class Meta:
-        model = Album
-        fields = ('userId',)
-
-
-class PhotoFilter(FilterSet):
-
-    class Meta:
-        model = Photo
-        fields = ('albumId',)
-
-
-class UserFilter(FilterSet):
-
-    class Meta:
-        model = User
-        fields = ('id',)
-
-
-class CommentFilter(FilterSet):
-    class Meta:
-        model = Comments
-        fields = ('postId',)
+        fields = ('category', 'tags'  )

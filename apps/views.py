@@ -1,236 +1,65 @@
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
-from rest_framework import request
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.viewsets import ModelViewSet
-
-from apps.filters import PostFilter, AlbumFilter, PhotoFilter, UserFilter, CommentFilter
-from apps.models import Post, Comments, Album, Photo, Todo, User, Book, Product, Customer, Order, OrderItem, Student
-from apps.serializers import PostModelSerializer, CommentModelSerializer, AlbumModelSerializer, PhotoModelSerializer, \
-    TodoModelSerializer, UserModelSerializer, BookModelSerializer, BookDetailModelSerializer, ProductSerializer, \
-    CustomerSerializer, OrderSerializer, OrderItemSerializer, StudentSerializer, StudentDetailSerializer
-
-
-@extend_schema(tags=['Post'])
-class PostListCreateAPIView(ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostModelSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = PostFilter
-
-
-@extend_schema(tags=['Post'])
-class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostModelSerializer
-
-
-
-@extend_schema(tags=['Post'])
-class PostCommentsListAPIView(ListAPIView):
-    queryset = Comments.objects.all()
-    serializer_class = CommentModelSerializer
-
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pk = self.kwargs.get('pk')
-        return qs.filter(postId=pk)
-
-
-@extend_schema(tags=['Comment'])
-class CommentsListCreateAPIView(ListCreateAPIView):
-    queryset = Comments.objects.all()
-    serializer_class = CommentModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filterest_fields = ('postId', 'email')
-    search_fields = ('email', 'name')
-    ordering_fields = ('postId', 'id')
-    filterset_class = CommentFilter
-
-
-@extend_schema(tags=['Comment'])
-class CommentsRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Comments.objects.all()
-    serializer_class = CommentModelSerializer
-
-
-@extend_schema(tags=['Album'])
-class AlbumListCreateAPIView(ListCreateAPIView):
-    queryset = Album.objects.all()
-    serializer_class = AlbumModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterest_fields = ('userId', 'id')
-    search_fields = ('title',)
-    filterset_class = AlbumFilter
-
-
-
-
-@extend_schema(tags=['Album'])
-class AlbumRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Album.objects.all()
-    serializer_class = AlbumModelSerializer
-
-
-@extend_schema(tags=['Album'])
-class AlbumPhotoListAPIView(ListAPIView):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoModelSerializer
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pk = self.kwargs.get('pk')
-        return qs.filter(albumId=pk)
-
-
-@extend_schema(tags=['Photo'])
-class PhotoListCreateAPIView(ListCreateAPIView):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterest_fields = ('albumId', 'id')
-    search_fields = ('title',)
-    filterset_class = PhotoFilter
-
-
-@extend_schema(tags=['Photo'])
-class PhotoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoModelSerializer
-
-
-
-@extend_schema(tags=['Todo'])
-class TodoListCreateAPIView(ListCreateAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterest_fields = ('albumId', 'id')
-    search_fields = ('title',)
-
-
-@extend_schema(tags=['Todo'])
-class TodoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoModelSerializer
-
-
-@extend_schema(tags=['User'])
-class UserListCreateAPIView(ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterest_fields = ('albumId', 'id')
-    search_fields = ('title',)
-    filterset_class = UserFilter
-
-
-@extend_schema(tags=['User'])
-class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserModelSerializer
-
-
-@extend_schema(tags=['User'])
-class UserPostListAPIView(ListAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostModelSerializer
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pk = self.kwargs.get('pk')
-        return qs.filter(userId=pk)
-
-
-@extend_schema(tags=['User'])
-class UserTodoListAPIView(ListAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoModelSerializer
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pk = self.kwargs.get('pk')
-        return qs.filter(userId=pk)
-
-
-@extend_schema(tags=['User'])
-class UserAlbumListAPIView(ListAPIView):
-    queryset = Album.objects.all()
-    serializer_class = AlbumModelSerializer
-
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pk = self.kwargs.get('pk')
-        return qs.filter(userId=pk)
-
-
-
-@extend_schema(tags=['Book'])
-class BookListCreateAPIView(ListCreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    search_fields = ('title',)
-
-
-@extend_schema(tags=['Book'])
-class BookRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Book.objects.all()
-    serializer = BookDetailModelSerializer
-
-
-@extend_schema(tags=['Product'])
-class ProductListCreateAPIView(ListCreateAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-
-
-@extend_schema(tags=['Customer'])
-class CustomerListCreateAPIView(ListCreateAPIView):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
-
-
-
-@extend_schema(tags=['Order'])
-class OrderListCreateAPIView(ListCreateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-
-
-@extend_schema(tags=['OrderItem'])
-class OrderItemListCreateAPIView(ListCreateAPIView):
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
-from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import Student
-from .serializers import StudentSerializer
-
-
-@extend_schema(tags=['Student'])
-class StudentListCreateAPIView(ListCreateAPIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-
-    filter_backends = (DjangoFilterBackend,SearchFilter, OrderingFilter)
-    filterset_fields = ('grade', 'is_active')
-    search_fields = ('name',)
-    ordering_fields = ('age', 'created_at')
+from apps.filters import PostFilter
+from apps.models import Post
+from apps.models.posts import Like
+from apps.permission import IsAuthorReadOrWrite
+from apps.serializers import PostListSerializerModel, CustomTokenObtainPairSerializer, PostSerializerModel
 
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+#
+@extend_schema(tags=['Post'])
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+class PostModelViewSet(ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializerModel
+    http_method_names = ['get', 'post']
+
+    @action(detail=True, methods=['post'], url_path='like', serializer_class=None)
+    def set_like(self, request, pk=None):
+        Like.objects.get_or_create(user=request.user, post_id=pk)
+        return Response({'status': 'ok'})
+
+    @action(detail=True, methods=['post'], url_path='unlike', serializer_class=None)
+    def set_unlike(self, request, pk=None):
+        Like.objects.filter(user=request.user, post_id=pk).delete()
+        return Response({'status': 'ok'})
 
 
 
+# @extend_schema(tags=['Post'])
+# class PostListCreateAPIView(ListCreateAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializerModel
+#     permission_classes = [IsAuthorReadOrWrite]
+#     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+#     filterset_class = PostFilter
+#     search_fields = ('title', 'content')
+#     ordering_fields = ('created_at', 'views_count', 'likes_count')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.annotate(likes_count=Count('likes'))
 
 
-
-
+"""
+"refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3NzQ1ODQ3NSwiaWF0IjoxNzc3MzcyMDc1LCJqdGkiOiJjZWQzMmNjNzk3ZTU0YzI0YjQ4NWQyNTEyMjZjMWI1MiIsInVzZXJfaWQiOiIxIiwicm9sZSI6ImFkbWluIn0.Nkb6rxkEOTAoBitoGNAhctvMYcvxC6wRcM9SEri7d50",
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3Mzc1Njc1LCJpYXQiOjE3NzczNzIwNzUsImp0aSI6ImRiNTNmMDkwNDFjYjQ0ZWI5M2RhNWYzZjU0NmVlOGE0IiwidXNlcl9pZCI6IjEiLCJyb2xlIjoiYWRtaW4ifQ.n-4OUQQ67b6kO1mXnj_FcyUlR9H52Bhy2yJYkDxKGAc"
+  """
