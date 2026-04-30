@@ -42,136 +42,78 @@ DELETE  	/comments/1
 
 
 
-
-
-
-
-
-
-
-
-
-ISHGA
-🚀 Advanced Topshiriq: Multi-User Blog + Interaction API
-🎯 Maqsad:
-
-Quyidagi barcha tushunchalarni real loyihadagidek ishlatish:
-
-Murakkab model relationlar
-Custom serializer logic
-Advanced filter/search
-JWT + role based permission
-Admin customization
-🧩 1. Model struktura (murakkabroq)
-
-Quyidagi modellerni yarat:
-
-👤 User (custom user bo‘lsa yaxshi)
-username
-email
-role (ADMIN, AUTHOR, READER)
-📝 Post
-title
-content
-author (FK → User)
-category (FK → Category)
-tags (ManyToMany → Tag)
-is_published
-views_count
-created_at
-🗂 Category
-name
-🏷 Tag
-name
-❤️ Like
-user
-post
-
-👉 Constraint qo‘shing:
-
-1 user 1 postga faqat 1 marta like bosishi mumkin
-🔄 2. Serializer (advanced logic)
-PostSerializer:
-author read-only
-likes_count (annotate yoki method field)
-is_liked (request.user ga qarab)
-tags nested yoki slug orqali
-
-👉 Bonus:
-
-create/update da taglarni avtomatik create qilsin
-🔐 3. JWT Auth
-
-djangorestframework-simplejwt
-
-Qo‘shimcha:
-
-Custom token ichiga role qo‘shing
-🔑 4. Permission (murakkab)
-
-Custom permission yoz:
-
-Rules:
+"""
 ADMIN → hamma narsani qila oladi
 AUTHOR → faqat o‘z postini edit/delete
 READER → faqat o‘qiydi
 
-👉 Custom class yoz (IsAuthorOrAdmin kabi)
+"""
 
-🔎 5. Advanced Filter/Search
 
-django-filter
 
-Filter:
+
+
+
+
+
+
+
+🟡 MIDDLE (Real API Level)
+
+👉 Maqsad: relation + custom logic
+
+📌 Task: Multi-user Blog
+1. Model (expand)
+
+Qo‘shing:
+
+Category
+Tag (M2M)
+Like
+
+👉 Constraint:
+
+1 user → 1 like per post
+2. Serializer (advanced)
+
+PostSerializer:
+
+Qo‘shing:
+
+likes_count
+is_liked
+
+tags:
+create/update:
+taglarni avtomatik create qilsin
+3. Permission
+
+Custom yozing:
+
+ADMIN → hamma narsa
+AUTHOR → o‘z posti
+READER → faqat read
+4. ViewSet
+
+Qo‘shing:
+
+/like/
+/unlike/
+/my-posts/
+5. Filter
+
+Qo‘shing:
+
 category
-tags (multi filter)
+tags (multi)
 created_at range
-views_count > X
-Search:
+6. Search + Ordering
+search:
 title
 content
-Ordering:
+ordering:
 created_at
 views_count
-likes_count
-⚡ 6. ViewSet (pro level)
-PostViewSet:
-CRUD
-/like/ custom action
-/unlike/ custom action
-/popular/ → eng ko‘p ko‘rilgan postlar
-/my-posts/ → user postlari
-
-👉 views_count:
-
-retrieve qilinganda +1 bo‘lsin
-🛠 7. Admin panel (pro customization)
-
-Admin’da:
-
-Inline Like ko‘rsatish
-list_display:
-title, author, views_count, is_published
-filter:
-category, is_published
-search:
-title, content
-
-👉 Bonus:
-
-views_count ni readonly qiling
-🧠 8. Performance (important)
-select_related
-prefetch_related
-annotate bilan likes_count
-📄 9. Default Settings
-DEFAULT_PERMISSION → IsAuthenticated
-Pagination (limit/offset)
-Throttling qo‘shish (optional)
-
-
-
-
-27
-30
-34
+7. Admin
+Inline Like
+views_count readonly

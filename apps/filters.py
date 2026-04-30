@@ -9,7 +9,6 @@ class PostFilter(FilterSet):
     to_time = DateTimeFilter(field_name='created_at', lookup_expr='lte')
     view_count = NumberFilter(field_name='views_count', lookup_expr='gt')
 
-
     class Meta:
         model = Post
-        fields = ('category', 'tags'  )
+        fields = ('category', 'tags')

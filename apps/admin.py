@@ -10,7 +10,7 @@ from apps.models import User, Post
 class UserModelView(UserAdmin):
     add_fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email", )}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "role" )}),
         (
             _("Permissions"),
             {
