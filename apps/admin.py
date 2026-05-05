@@ -3,7 +3,7 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from apps.models import User, Post
+from apps.models.users import User
 
 
 @admin.register(User)
@@ -25,10 +25,3 @@ class UserModelView(UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-
-
-@admin.register(Post)
-class PostModelAdmin(ModelAdmin):
-    list_display = 'title', 'author', 'is_published'
-    search_fields = 'title',
-    list_filter = 'is_published',

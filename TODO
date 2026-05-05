@@ -41,13 +41,67 @@ DELETE  	/comments/1
 
 
 
-
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 """
 ADMIN → hamma narsani qila oladi
 AUTHOR → faqat o‘z postini edit/delete
 READER → faqat o‘qiydi
 
 """
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+class IsAdminAuthorOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user and request.user.is_authenticated
+
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        if request.method in SAFE_METHODS:
+            return True
+        return obj.author == request.user
+
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+                                                                                                          |
+api/v1/posts                                                                                              |
+2, 3 ta malumot qoshish kk                                                                                |
+
+api/v1/posts?download=json
+users.json
+
+
+from django.http import HttpResponse
+import json
+
+class PostViewSet(ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def list(self, request, *args, **kwargs):
+        if request.query_params.get("download") == "json":
+            data = PostSerializer(self.get_queryset(), many=True).data
+            response = HttpResponse(
+                json.dumps(data, indent=2),
+                content_type="application/json"
+            )
+            response["Content-Disposition"] = "attachment; filename=posts.json"
+            return response
+
+        return super().list(request, *args, **kwargs)
+
+
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
 
 
 
@@ -55,65 +109,46 @@ READER → faqat o‘qiydi
 
 
 
+🟡 Medium: "E-Learning Platformasi" (Upgraded)
+Bu yerda asosiy urg'u Permission Logic va Optimizationga beriladi.
+
+Vazifa shartlari:
+
+ORM (Limited Choice & Constraints): Lesson modelida dars tartib raqami (order) bo'lsin. Bir kurs ichida dars tartib raqamlari takrorlanmasligini ta'minlovchi UniqueConstraint yozing.
+
+Advanced Permission: IsCourseOwnerOrEnrolled nomli custom permission yarating. U shunday ishlashiki:
+
+Kurs muallifi hamma narsani ko'ra oladi.
+
+Sotib olgan student faqat darslarni ko'ra oladi.
+
+Sotib olmaganlarga faqat "Preview" darslargagina ruxsat beriladi.
+
+Complex Filter: Courselarni filtrlashda Subquery yoki Exists ishlating. Masalan, foydalanuvchi "men hali tugatmagan kurslarni ko'rsat" degan filtrni bosa olsin.
+
+🔴 Hard: "B2B Marketplace & Inventory System" (Upgraded)
+Bu daraja studentdan Database Triggers (yoki Signal) va murakkab Aggregationlarni talab qiladi.
+
+Vazifa shartlari:
+
+ORM (Atomic Transactions): Buyurtma berish jarayonini transaction.atomic ichiga oling. Buyurtma tasdiqlanganda, ombordagi mahsulot soni avtomatik kamaysin. Agar mahsulot yetmasa, butun protsess "rollback" bo'lishi shart.
+
+Complex Filter & Search: PostgreSQL ishlatilayotgan bo'lsa, TrigramSimilarity orqali imloviy xatolar bilan qidirishni (fuzzy search) yo'lga qo'ying.
+
+Nested Serializers & Write Logic: Bitta API so'rovi bilan ham Order, ham uning ichidagi bir nechta OrderItemlarni (M2M through table) yaratishni amalga oshiring (create() metodini override qiling).
+
+FileResponse (Excel/CSV):
+
+Katta hajmdagi ma'lumotlarni (masalan, 50,000 ta qator) Excelga eksport qilishda server xotirasi (RAM) to'lib qolmasligi uchun StreamingHttpResponse yoki Paginator orqali chunk-by-chunk usulini qo'llang.
+
+Excelda har bir kategoriya uchun alohida "Sheet" (sahifa) bo'lsin va yakuniy qatorda umumiy summa formulasi tursin.
+
+Dynamic Permissions: Rollar ierarxiyasini yarating (Admin > Manager > Operator). Yuqori roldagilar pastdagilarning filtrlariga va amallariga to'liq accessga ega bo'lsin.
 
 
 
-🟡 MIDDLE (Real API Level)
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc4MTY1MTA1LCJpYXQiOjE3Nzc3MzMxMDUsImp0aSI6IjllMWYwMDBhNDg5ZDQzYjFiZDI1NDI5MWI2YjgzOWY1IiwidXNlcl9pZCI6IjEiLCJyb2xlIjoiYWRtaW4ifQ.05z2eOG6UW8ghPvtn8USTJsBcfehNFPrG2JgWrpX6oc
 
-👉 Maqsad: relation + custom logic
 
-📌 Task: Multi-user Blog
-1. Model (expand)
 
-Qo‘shing:
 
-Category
-Tag (M2M)
-Like
-
-👉 Constraint:
-
-1 user → 1 like per post
-2. Serializer (advanced)
-
-PostSerializer:
-
-Qo‘shing:
-
-likes_count
-is_liked
-
-tags:
-create/update:
-taglarni avtomatik create qilsin
-3. Permission
-
-Custom yozing:
-
-ADMIN → hamma narsa
-AUTHOR → o‘z posti
-READER → faqat read
-4. ViewSet
-
-Qo‘shing:
-
-/like/
-/unlike/
-/my-posts/
-5. Filter
-
-Qo‘shing:
-
-category
-tags (multi)
-created_at range
-6. Search + Ordering
-search:
-title
-content
-ordering:
-created_at
-views_count
-7. Admin
-Inline Like
-views_count readonly
