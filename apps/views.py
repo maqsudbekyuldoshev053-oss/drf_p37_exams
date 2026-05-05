@@ -16,41 +16,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-#
-# @extend_schema(tags=['Course'])
-# class CourseModelViewSet(ModelViewSet):
-#     queryset = Course.objects.all()
-#     serializer_class = CourseModelSerializer
-#     permission_classes = [IsAdminAuthorOrReadOnly]
-#     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-#     search_fields = ('title', 'description')
-#     ordering_fields = ('id',)
-#     http_method_names = ['post', 'get', 'patch']
-#     pagination_class = None
-#
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         user = self.request.user
-#
-#         if user.is_authenticated:
-#             key = Exists(Enrollment.objects.filter(course=OuterRef('pk'), user=user))
-#         else:
-#             key = Value(False, BooleanField())
-#
-#         return qs.annotate(
-#             students_count=Count('enrollments'),
-#             is_enrolled=key
-#         )
-#
-#     @action(detail=True, methods=['post'], url_path='enrollment', serializer_class=None)
-#     def set_like(self, request, pk=None):
-#         Enrollment.objects.get_or_create(user=request.user, course_id=pk)
-#         return Response({'status': 'ok'})
-#
-#     @action(detail=True, methods=['post'], url_path='unenrollment', serializer_class=None)
-#     def set_unlike(self, request, pk=None):
-#         Enrollment.objects.filter(user=request.user, course_id=pk).delete()
-#         return Response({'status': 'ok'})
 
 @extend_schema(tags=['Book'])
 class BookViewSet(ModelViewSet):

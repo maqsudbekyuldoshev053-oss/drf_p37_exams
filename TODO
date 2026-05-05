@@ -104,50 +104,22 @@ class PostViewSet(ModelViewSet):
 ----------------------------------------------------------------------------------------------------------
 
 
-
-
-
-
-
-🟡 Medium: "E-Learning Platformasi" (Upgraded)
-Bu yerda asosiy urg'u Permission Logic va Optimizationga beriladi.
+Easy: "Kutubxona Katalogi" (Upgraded)
+Endi bu bosqichda student QuerySet API va Custom Fields bilan jiddiyroq to'qnashadi.
 
 Vazifa shartlari:
 
-ORM (Limited Choice & Constraints): Lesson modelida dars tartib raqami (order) bo'lsin. Bir kurs ichida dars tartib raqamlari takrorlanmasligini ta'minlovchi UniqueConstraint yozing.
+ORM Manager: BookManager ichida annotate_with_availability() metodini yozing. U har bir kitobga hozirda kutubxonada nechta nusxa qolganini (total_copies - borrowed_copies) hisoblab, virtual field sifatida qo'shib bersin.
 
-Advanced Permission: IsCourseOwnerOrEnrolled nomli custom permission yarating. U shunday ishlashiki:
+Serializer: BookSerializer ichida kitobning "eskirganlik" darajasini aniqlaydigan mantiq bo'lsin. Agar kitob 10 yildan oldin nashr etilgan bo'lsa, is_classic: True qaytarsin.
 
-Kurs muallifi hamma narsani ko'ra oladi.
+Search & Order: Bir vaqtning o'zida ham qidirish, ham bir nechta maydon bo'yicha tartiblash (OrderingFilter) imkoniyatini yarating (masalan, avval reyting, keyin nashr yili bo'yicha).
 
-Sotib olgan student faqat darslarni ko'ra oladi.
-
-Sotib olmaganlarga faqat "Preview" darslargagina ruxsat beriladi.
-
-Complex Filter: Courselarni filtrlashda Subquery yoki Exists ishlating. Masalan, foydalanuvchi "men hali tugatmagan kurslarni ko'rsat" degan filtrni bosa olsin.
-
-🔴 Hard: "B2B Marketplace & Inventory System" (Upgraded)
-Bu daraja studentdan Database Triggers (yoki Signal) va murakkab Aggregationlarni talab qiladi.
-
-Vazifa shartlari:
-
-ORM (Atomic Transactions): Buyurtma berish jarayonini transaction.atomic ichiga oling. Buyurtma tasdiqlanganda, ombordagi mahsulot soni avtomatik kamaysin. Agar mahsulot yetmasa, butun protsess "rollback" bo'lishi shart.
-
-Complex Filter & Search: PostgreSQL ishlatilayotgan bo'lsa, TrigramSimilarity orqali imloviy xatolar bilan qidirishni (fuzzy search) yo'lga qo'ying.
-
-Nested Serializers & Write Logic: Bitta API so'rovi bilan ham Order, ham uning ichidagi bir nechta OrderItemlarni (M2M through table) yaratishni amalga oshiring (create() metodini override qiling).
-
-FileResponse (Excel/CSV):
-
-Katta hajmdagi ma'lumotlarni (masalan, 50,000 ta qator) Excelga eksport qilishda server xotirasi (RAM) to'lib qolmasligi uchun StreamingHttpResponse yoki Paginator orqali chunk-by-chunk usulini qo'llang.
-
-Excelda har bir kategoriya uchun alohida "Sheet" (sahifa) bo'lsin va yakuniy qatorda umumiy summa formulasi tursin.
-
-Dynamic Permissions: Rollar ierarxiyasini yarating (Admin > Manager > Operator). Yuqori roldagilar pastdagilarning filtrlariga va amallariga to'liq accessga ega bo'lsin.
+FileResponse (Image): Kitobning muqova rasmini (image) turli o'lchamlarda (thumbnail) qaytaruvchi alohida View yozing.
 
 
 
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc4MTY1MTA1LCJpYXQiOjE3Nzc3MzMxMDUsImp0aSI6IjllMWYwMDBhNDg5ZDQzYjFiZDI1NDI5MWI2YjgzOWY1IiwidXNlcl9pZCI6IjEiLCJyb2xlIjoiYWRtaW4ifQ.05z2eOG6UW8ghPvtn8USTJsBcfehNFPrG2JgWrpX6oc
+
 
 
 
