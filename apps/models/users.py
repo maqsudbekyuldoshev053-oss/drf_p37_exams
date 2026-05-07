@@ -10,5 +10,6 @@ class User(AbstractUser):
         Author = "author", "Author"
         Reader = "reader", "Reader"
     role = CharField(max_length=15, choices=Role.choices, default=Role.Reader)
+    phone = CharField(max_length=15, unique=True)
 
     objects = CustomUserManager()
