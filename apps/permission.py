@@ -13,4 +13,6 @@ class IsAuthorOrAdminOrReadOnly(BasePermission):
             return True
         if request.method in SAFE_METHODS:
             return True
+        if request.method in ['DELETE']:
+            return True
         return obj.author == request.user

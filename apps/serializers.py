@@ -4,8 +4,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.models import Post, Tag
-
-
+from models import Category
 
 
 class PostModelSerializer(ModelSerializer):
@@ -60,6 +59,13 @@ class PostModelSerializer(ModelSerializer):
         tag_list = self._check_tag(validated_data)
         instance.tags.set(tag_list)
         return super().update(instance, validated_data)
+
+
+
+class CategorySerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
