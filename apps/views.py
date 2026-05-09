@@ -1,19 +1,18 @@
-
 from django.db.models import Count, Value, BooleanField, OuterRef, Exists, F
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apps.filters import PostFilter
-from apps.models import Post
-from apps.models.posts import Like, Category
-from apps.permission import IsAuthorOrAdminOrReadOnly
-from apps.serializers import CustomTokenObtainPairSerializer, PostModelSerializer, CategorySerializer
+from .filters import PostFilter
+from .models import Post
+from .models.posts import Like, Category
+from .permission import IsAuthorOrAdminOrReadOnly
+from .serializers import CustomTokenObtainPairSerializer, PostModelSerializer, CategorySerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -55,7 +54,6 @@ class PostModelViewSet(ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-
     @action(detail=True, methods=['post'], url_path='like', serializer_class=None)
     def set_like(self, request, pk=None):
         Like.objects.get_or_create(user=request.user, post_id=pk)
@@ -72,6 +70,7 @@ class PostModelViewSet(ModelViewSet):
         qs = self.get_queryset().filter(author=user)
         response = PostModelSerializer(qs, many=True, context={'request': request}).data
         return Response(response)
+
 
 @extend_schema(tags=['Category'])
 class CategoryViewSet(ModelViewSet):
