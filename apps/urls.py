@@ -2,12 +2,10 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from apps.views import (CustomTokenObtainPairView, PostModelViewSet)
-from views import CategoryViewSet
+from views import (CustomTokenObtainPairView, PostModelViewSet)
 
 router = SimpleRouter(trailing_slash=False)
 router.register('posts', PostModelViewSet)
-router.register('category', CategoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

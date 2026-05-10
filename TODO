@@ -1,0 +1,96 @@
+savol
+modern blog & community api
+
+----------------------------------------------------------------------------------------------------------------------------
+1. modellar arxitekturasi(database design)
+siz quyidagi model strukturasini yaratishingiz va ular orasidagi bogliqliklarni togri ornatishingiz kerak:
+
+Category: name(unique), slug.
+Tag: name(unique)
+Post:
+author(User FK).
+category (Category FK, related_name='posts)
+tags (ManyToManyField)
+title, content, created_at, views_count(default=0)
+
+Like:
+user(User FK).
+post(Post FK, related_name='likes').
+
+Constraint: Bitta foydalanuvchi bitta postga faqat 1 marta like bosa olishini ma'lumotlar bazasi darajasida ta'minlag(UniqueConstraint).
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+2. Serializers (Logic & Custom Fields)
+PostSerializer quyidagi talablarga javob berishi shart:
+
+Custom Fields:
+likes_count: Postga tegishli like lar soni (Annotation orqali hisoblansin).
+is_liked: So'rov yuborgan foydalanuvchi(request.user) ushbu postga like bosganmi yoki yoqmi (Boolean).
+
+Writable Nested Logic:
+tags maydoni stringlar ro'yxati korinishida qabul qilinsin (masalan: ["python", "django"]).
+create() va update() metodlarini override qiling: agar jonatilgan tag bazada bolmasa, yangi yaratsin (get_or_create), bor bolsa postga biriktirsin.
+Read-only: views_count va author foydalanuvchi tomonidan qolda ozgartirilmasligi kerak.
+
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+3. Custom Permissions (Acees Control)
+Faqatgina IsAuthenticatedOrReadOnly yetarli emas. Quyidagi talablarga mos IsAuthorOrAdminOrReadOnly nomli ruxsatnoma yarating:
+GET (Hamma): Postlarni hamma kora oladi (anonim foydalanuvchilar ham).
+POST (Authenticated): Post yaratish uchun foydalanuvchi login qilgan bolishi shart.
+PUT/PATCH (Author/Admin): Postni faqat uning muallifi yoki Admin ozgartira oladi.
+DELETE (Admin only): Postni faqat Admin ochira oladi.
+
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+4. ViewSet & Action Logic
+
+PostViewSet ichida standart CRUD ammallaridan tashqari quyidagilarni bajaring:
+Custom Action (/like/): Post sorovi orqali postga like bosish yoki like ni qaytarib olish (toggle logic) funksiyasini yozing.
+Custom Action (/my-posts/): Faqat joriy login qilgan foydalanuvchining postlarini qaytaruvchi endpoint.
+Retrieve Logic: Har safar bitta post tafsilotlarini korilganda (retrieve), views_count maydonini 1 taga oshiring.
+
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+
+5. Filtering, Search & Ordering
+API foydalanuvchilari malumotlarni oson topishlari uchun:
+Filtering: django-filter kutubxonasidan foydalanib, category (id boyicha) va tags (slug yoki nomi boyicha) filtrlashni yolga qoying.
+Search: title va content maydonlari boyicha qidirish.
+Ordering: created_at (yangi/eski) va views_count (ommaboplik) boyicha tartiblash.
+
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+6. Django Admin & Optimization
+Admin Panel: Postlar royxati views_count korinsin, lekin uni admin ham qolda tahrirlay olmasin (readonly_fields). Like larni post ichida Inline korinishida qoshing.
+Optimization (N+1 problem): get_queryset metodida select_related (category, author uchun) va prefetch_related(tags uchun) ishlating.
+Slug Generation: Post yaratilayotgan paytda titledan kelib chiqib avtomatic slug generatsiya qiling (agar modelda slug bolsa).
+Dynamic Fields: Agar serializerga ?/fields=id, title deb sorov kelsa, faqat osha maydonlarni qaytarsin.
+---------------------------------------------------------------------------------------------------------------------------
+✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+---------------------------------------------------------------------------------------------------------------------------
